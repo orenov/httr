@@ -287,18 +287,21 @@ oauth_service_token <- function(endpoint, secrets, scope = NULL) {
 #' @rdname Token-class
 TokenServiceAccount <- R6::R6Class("TokenServiceAccount", inherit = Token2.0, list(
   secrets = NULL,
-  initialize = function(endpoint, secrets, params) {
+  initialize = function(endpoint, secrets, params, credentials = NULL) {
     self$endpoint <- endpoint
     self$secrets <- secrets
     self$params <- params
-
+    self$credentials <- credentials
+    
     self$refresh()
   },
   can_refresh = function() {
     TRUE
   },
   refresh = function() {
-    self$credentials <- init_oauth_service_account(self$secrets, self$params$scope)
+    if (is.null(self$credentials)) {
+      self$credentials <- init_oauth_service_account(self$secrets, self$params$scope)
+    }
     self
   },
   sign = function(method, url) {
